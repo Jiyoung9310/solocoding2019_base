@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:solocoding2019_base/model/weather_model.dart';
+import 'package:weather/weather.dart';
 
 void main() => runApp(MyApp());
 
@@ -9,6 +11,15 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
+
+  Weather weatherData;
+
+  @override
+  void initState() {
+    super.initState();
+    loadWeatherData();
+  }
+
   @override
   Widget build(BuildContext context) {
     // set material design app
@@ -29,6 +40,12 @@ class MyAppState extends State<MyApp> {
     );
   }
 
+  loadWeatherData() async {
+    setState(() {
+      weatherData = getWeatherData();
+    });
+  }
+
   Widget _getTodayWeather() {
     return Column (
       mainAxisSize: MainAxisSize.min,
@@ -37,12 +54,12 @@ class MyAppState extends State<MyApp> {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: <Widget>[
-              Text('용인시', style: TextStyle(color: Colors.white),),
-              Text('맑음', style: TextStyle(color: Colors.white, fontSize: 32.0),),
-              Text('10°C', style: TextStyle(color: Colors.white),),
-              Image.network('https://openweathermap.org/img/w/01d.png'),
-              Text('2019년 4월 10일', style: TextStyle(color: Colors.white),),
-              Text('AM 10:16', style: TextStyle(color: Colors.white),),
+              Text(weatherData.areaName, style: TextStyle(color: Colors.white),),
+              Text(weatherData.weatherDescription, style: TextStyle(color: Colors.white, fontSize: 32.0),),
+              Text('${weatherData.tempMin.celsius}°C/${weatherData.tempMax.celsius}°C', style: TextStyle(color: Colors.white),),
+              Image.network(weatherData.weatherIcon),
+              Text('${weatherData.date.year}년 ${weatherData.date.month}월 ${weatherData.date.day}일', style: TextStyle(color: Colors.white),),
+              Text('${weatherData.date.hour} : ${weatherData.date.minute}', style: TextStyle(color: Colors.white),),
             ],
           ),
         ),
