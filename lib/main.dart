@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:solocoding2019_base/data/weather_data.dart';
 import 'package:solocoding2019_base/model/weather_model.dart';
-import 'package:weather/weather.dart';
+import 'dart:async' show Future;
+import 'package:location/location.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:math';
 
 void main() => runApp(MyApp());
 
@@ -12,7 +17,9 @@ class MyApp extends StatefulWidget {
 
 class MyAppState extends State<MyApp> {
 
-  Weather weatherData;
+  WeatherApi api = new WeatherApi();
+  WeatherData weatherData;
+
 
   @override
   void initState() {
@@ -34,15 +41,26 @@ class MyAppState extends State<MyApp> {
           title: Text('Weather App'), // app bar title
         ),
         body: Center(
-          child: _getTodayWeather(), // center text
+          child: weatherData!=null ? _getTodayWeather() : Container(), // center text
         ),
       ),
     );
   }
 
   loadWeatherData() async {
-    setState(() {
-      weatherData = getWeatherData();
+    String _apiKey = "API";
+    http.Client client = new http.Client();
+    final String FORECAST = 'forecast';
+    final String WEATHER = 'weather';
+    final lat = 37.3897;
+    final lon = 127.1017;
+
+    String url = 'http://api.openweathermap.org/data/2.5/weather' +
+        '?lat=$lat&lon=$lon&appid=$_apiKey'; //await _generateUrl(tag: WEATHER);
+    http.Response response = await client.get(url);
+    Map<String, dynamic> currentWeather = json.decode(response.body);
+    return setState(() {
+      weatherData = new WeatherData.fromJson(currentWeather);
     });
   }
 
@@ -54,10 +72,10 @@ class MyAppState extends State<MyApp> {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: <Widget>[
-              Text(weatherData.areaName, style: TextStyle(color: Colors.white),),
-              Text(weatherData.weatherDescription, style: TextStyle(color: Colors.white, fontSize: 32.0),),
-              Text('${weatherData.tempMin.celsius}°C/${weatherData.tempMax.celsius}°C', style: TextStyle(color: Colors.white),),
-              Image.network(weatherData.weatherIcon),
+              Text(weatherData.name, style: TextStyle(color: Colors.white),),
+              Text(weatherData.main, style: TextStyle(color: Colors.white, fontSize: 32.0),),
+              Text('${weatherData.temp}°C', style: TextStyle(color: Colors.white),),
+              Image.network(weatherData.icon),
               Text('${weatherData.date.year}년 ${weatherData.date.month}월 ${weatherData.date.day}일', style: TextStyle(color: Colors.white),),
               Text('${weatherData.date.hour} : ${weatherData.date.minute}', style: TextStyle(color: Colors.white),),
             ],
