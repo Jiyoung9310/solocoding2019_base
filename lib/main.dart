@@ -6,6 +6,7 @@ import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:math';
+import 'package:weather/weather.dart';
 
 void main() => runApp(MyApp());
 
@@ -18,7 +19,8 @@ class MyApp extends StatefulWidget {
 class MyAppState extends State<MyApp> {
 
   WeatherApi api = new WeatherApi();
-  WeatherData weatherData;
+  //WeatherData weatherData;
+  Weather weatherData;
 
 
   @override
@@ -48,19 +50,13 @@ class MyAppState extends State<MyApp> {
   }
 
   loadWeatherData() async {
-    String _apiKey = "API";
-    http.Client client = new http.Client();
-    final String FORECAST = 'forecast';
-    final String WEATHER = 'weather';
-    final lat = 37.3897;
-    final lon = 127.1017;
+    String _apiKey = "ec5155520dbc4cfb4613b6a18205e051";
 
-    String url = 'http://api.openweathermap.org/data/2.5/weather' +
-        '?lat=$lat&lon=$lon&appid=$_apiKey'; //await _generateUrl(tag: WEATHER);
-    http.Response response = await client.get(url);
-    Map<String, dynamic> currentWeather = json.decode(response.body);
+    WeatherStation weatherStation = new WeatherStation(_apiKey);
+    Weather weather = await weatherStation.currentWeather();
+
     return setState(() {
-      weatherData = new WeatherData.fromJson(currentWeather);
+      weatherData = weather;
     });
   }
 
@@ -72,16 +68,16 @@ class MyAppState extends State<MyApp> {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: <Widget>[
-              Text(weatherData.name, style: TextStyle(color: Colors.white),),
-              Text(weatherData.main, style: TextStyle(color: Colors.white, fontSize: 32.0),),
-              Text('${weatherData.temp}°C', style: TextStyle(color: Colors.white),),
-              Image.network(weatherData.icon),
+              Text(weatherData.areaName, style: TextStyle(color: Colors.white),),
+              Text(weatherData.weatherDescription, style: TextStyle(color: Colors.white, fontSize: 32.0),),
+              Text('최저${weatherData.tempMin.celsius}°C / 최고${weatherData.tempMin.celsius}°C', style: TextStyle(color: Colors.white),),
+              Image.network('http://openweathermap.org/img/w/${weatherData.weatherIcon}.png'),
               Text('${weatherData.date.year}년 ${weatherData.date.month}월 ${weatherData.date.day}일', style: TextStyle(color: Colors.white),),
               Text('${weatherData.date.hour} : ${weatherData.date.minute}', style: TextStyle(color: Colors.white),),
             ],
           ),
         ),
-        Padding(
+        /*Padding(
           padding: const EdgeInsets.all(8.0),
           child: IconButton(
               icon: Icon(Icons.refresh),
@@ -89,7 +85,7 @@ class MyAppState extends State<MyApp> {
               onPressed: () => null,
               color: Colors.white,
           )
-        )
+        )*/
       ],
     );
   }
