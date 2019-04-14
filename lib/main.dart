@@ -11,6 +11,7 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
 
   WeatherApi api = new WeatherApi();
   WeatherData weatherData;
@@ -20,7 +21,10 @@ class MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    loadWeatherData();
+    //loadWeatherData();
+
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _refreshIndicatorKey.currentState.show());
   }
 
   @override
@@ -35,19 +39,39 @@ class MyAppState extends State<MyApp> {
         backgroundColor: Colors.blueGrey,
         appBar: AppBar(
           title: Text('Weather App'), // app bar title
+          actions: <Widget>[
+            new IconButton(
+                icon: const Icon(Icons.refresh),
+                tooltip: 'Refresh',
+                onPressed: () {
+                  _refreshIndicatorKey.currentState.show();
+                }),
+          ],
         ),
-        body: Center(
-          child: weatherData!=null ? _getTodayWeather() : Container(), // center text
-        ),
+        body: RefreshIndicator(
+            key: _refreshIndicatorKey,
+            onRefresh: _refresh,
+            child: ListView(children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 24.0),
+                child: Center(
+                  child: weatherData!=null ? _getTodayWeather() : Container()
+                ),
+              )
+            ]))
       ),
     );
   }
 
+  Future<dynamic> _refresh() {
+    return loadWeatherData().then((data) {
+      setState(() => weatherData = data);
+    });
+  }
+
   loadWeatherData() async {
     WeatherData data = await api.getWeatherData();
-    return setState(() {
-      weatherData = data;
-    });
+    return data;
   }
 
   Widget _getTodayWeather() {

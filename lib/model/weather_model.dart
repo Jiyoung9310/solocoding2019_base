@@ -30,7 +30,6 @@ class WeatherApi {
   }*/
 
   Future<String> _generateUrl({String tag}) async {
-    //Map<String, double> loc = await new Location().getLocation();
     LocationData currentLocation;
     var location = new Location();
     String result;
