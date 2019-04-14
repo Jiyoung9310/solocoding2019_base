@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:solocoding2019_base/data/weather_data.dart';
 import 'package:solocoding2019_base/model/weather_model.dart';
-import 'dart:async' show Future;
-import 'package:location/location.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'dart:math';
-import 'package:weather/weather.dart';
 
 void main() => runApp(MyApp());
 
@@ -19,8 +13,8 @@ class MyApp extends StatefulWidget {
 class MyAppState extends State<MyApp> {
 
   WeatherApi api = new WeatherApi();
-  //WeatherData weatherData;
-  Weather weatherData;
+  WeatherData weatherData;
+  //Weather weatherData;
 
 
   @override
@@ -50,13 +44,9 @@ class MyAppState extends State<MyApp> {
   }
 
   loadWeatherData() async {
-    String _apiKey = "ec5155520dbc4cfb4613b6a18205e051";
-
-    WeatherStation weatherStation = new WeatherStation(_apiKey);
-    Weather weather = await weatherStation.currentWeather();
-
+    WeatherData data = await api.getWeatherData();
     return setState(() {
-      weatherData = weather;
+      weatherData = data;
     });
   }
 
@@ -70,7 +60,7 @@ class MyAppState extends State<MyApp> {
             children: <Widget>[
               Text(weatherData.areaName, style: TextStyle(color: Colors.white),),
               Text(weatherData.weatherDescription, style: TextStyle(color: Colors.white, fontSize: 32.0),),
-              Text('최저${weatherData.tempMin.celsius}°C / 최고${weatherData.tempMin.celsius}°C', style: TextStyle(color: Colors.white),),
+              Text('최저${weatherData.tempMin}°C / 최고${weatherData.tempMax}°C', style: TextStyle(color: Colors.white),),
               Image.network('http://openweathermap.org/img/w/${weatherData.weatherIcon}.png'),
               Text('${weatherData.date.year}년 ${weatherData.date.month}월 ${weatherData.date.day}일', style: TextStyle(color: Colors.white),),
               Text('${weatherData.date.hour} : ${weatherData.date.minute}', style: TextStyle(color: Colors.white),),

@@ -1,6 +1,7 @@
 package io.flutter.plugins;
 
 import io.flutter.plugin.common.PluginRegistry;
+import com.gyagapen.settingsmenu.accesssettingsmenu.AccessSettingsMenuPlugin;
 import com.lyokone.location.LocationPlugin;
 
 /**
@@ -11,6 +12,7 @@ public final class GeneratedPluginRegistrant {
     if (alreadyRegisteredWith(registry)) {
       return;
     }
+    AccessSettingsMenuPlugin.registerWith(registry.registrarFor("com.gyagapen.settingsmenu.accesssettingsmenu.AccessSettingsMenuPlugin"));
     LocationPlugin.registerWith(registry.registrarFor("com.lyokone.location.LocationPlugin"));
   }
 
